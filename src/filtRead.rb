@@ -1,4 +1,5 @@
 #! /usr/bin/ruby
+#
 # filtRead.rb
 #
 # Copyright (c) 2016 - Ryo Kanno

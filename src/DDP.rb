@@ -1,8 +1,17 @@
 #! /usr/bin/ruby
+#
+# DDP.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SAMReader.rb"
-require "AlignDDP.rb"
-require "SeqTools.rb"
+
+require_relative "SAMReader.rb"
+require_relative "AlignDDP.rb"
+require_relative "SeqTools.rb"
 require "optparse"
 
 def write_data(rec, out)
@@ -12,7 +21,7 @@ def write_data(rec, out)
 end
 
 
-Version="1.1.4"
+Version="1.1.5"
 banner = "Usage: DDP.rb [option] <reference> <input SAM file> <position file>\n+DDP alignment\n"
 
 out_file="tmp.sam"

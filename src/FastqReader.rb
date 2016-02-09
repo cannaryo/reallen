@@ -1,5 +1,14 @@
 #! /usr/bin/ruby
-# FastqReader ver.1.2.0
+#
+# FastqReader.rb 
+# ver.1.2.0
+# This class is used to read/write fastq file
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
 FastqField = Struct.new("FastqField", :id, :seq, :dummy, :qual)
 

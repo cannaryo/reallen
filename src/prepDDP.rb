@@ -1,6 +1,14 @@
 #! /usr/bin/ruby
+#
+# prepDDP.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SAMReader.rb"
+require_relative "SAMReader.rb"
 require "optparse"
 
 def calc_start(dat)
@@ -52,7 +60,7 @@ def write_data(rec, out)
 end
 
 
-Version="1.0.4"
+Version="1.0.5"
 banner = "Usage: prepDDP.rb [option] <input SAM file>\n+prepare for DDP alignment\n"
 
 out_file="tmp.pos"

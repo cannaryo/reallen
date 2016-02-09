@@ -1,10 +1,18 @@
 #! /usr/bin/ruby
+#
+# splitSoftClip.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SAMReader.rb"
-require "FastqReader.rb"
+require_relative "SAMReader.rb"
+require_relative "FastqReader.rb"
 require "optparse"
 
-Version="1.3.1"
+Version="1.3.2"
 banner = "Usage: splitSoftClip.rb [option] <input SAM file>\n+Split soft-clipped sequences\n"
 
 min_len = 25

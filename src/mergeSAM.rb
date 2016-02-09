@@ -1,12 +1,18 @@
 #! /usr/bin/ruby
+#
+# mergeSAM.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SAMReader.rb"
+require_relative "SAMReader.rb"
 require "optparse"
 
-Version="1.0.1"
+Version="1.0.2"
 banner = "Usage: mergeSAM.rb [option] <primary SAM file> <secondery SAM file>\n+Merge two SAM files\n"
-
-
 
 out_file="tmp.sam"
 keep_id=false

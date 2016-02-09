@@ -1,8 +1,16 @@
 #! /usr/bin/ruby
+#
+# bp2table.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
 require "optparse"
-require "CSVReader.rb"
-require "GenomeAnnotation.rb"
+require_relative "CSVReader.rb"
+require_relative "GenomeAnnotation.rb"
 
 def is_region(chr, pos, bed_data)
   for dd in bed_data
@@ -28,10 +36,11 @@ def make_csv_data(opts)
   return csv
 end
 
-def set_default_files(op)
-  op["gene"]="annotation/hg19_gene_region.csv"
-  op["exon"]="annotation/hg19_exon_region.csv"
-  op["cyto"]="annotation/cytoband.csv"
+def set_default_files(dir, op)
+  return if dir==""
+  op["gene"]= dir+"/hg19_gene_region.csv"
+  op["exon"]= dir+"/hg19_exon_region.csv"
+  op["cyto"]= dir+"/cytoband.csv"
 end
 
 def csv_push_main(csv, id, pp)
@@ -72,12 +81,12 @@ def sep_comma(num)
   return num.to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\1,')
 end
 
-Version="1.3.0"
+Version="1.3.2"
 banner = "Usage: bp2table.rb [option] <input BP file>\n+Output BP file in table format\n"
 
 opts = {"cov"=>"","bed"=>"","mode"=>"OR","out"=>"","cyto"=>"", "gene"=>"", "exon"=>"","dist"=>false,"blast"=>false}
 out_file = ""
-default_option=false
+annotation_dir = ""
 
 opt = OptionParser.new(banner)
 opt.on("-c file", "output original coverage (specify output of 'samtools bedcov')") { |v| opts["cov"]=v} 
@@ -88,7 +97,7 @@ opt.on("-i file","output cytoband (specify annotation CSV)") { |v| opts["cyto"] 
 opt.on("-o file","output file (default: STDOUT)") {|v| out_file=v}
 opt.on("-b file","cut by region BED file") { |v| opts["bed"] = v}
 opt.on("-A","extract by AND mode (default OR mode)") {|v| opts["mode"]="AND"}
-opt.on("--default","use default annotation CSV files (instead of -gei)") {|v| default_option = true} 
+opt.on("--annotation dir","use default annotation CSV files in dir(instead of -gei)") {|v| annotation_dir=v} 
 opt.on("--blast", "output by BLAST format") {|v| opts["blast"]=true}
 
 opt.parse!(ARGV)
@@ -116,7 +125,7 @@ else
   output=File.open(out_file,"w")
 end
 
-set_default_files(opts) if(default_option)
+set_default_files(annotation_dir, opts)
 csv=make_csv_data(opts)
 
 annot_keys=["gene","exon","cyto","cov"]

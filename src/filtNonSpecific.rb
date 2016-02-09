@@ -1,9 +1,17 @@
 #! /usr/bin/ruby
+#
+# filtNonSpecific.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SAMReader.rb"
+require_relative "SAMReader.rb"
 require "optparse"
 
-Version="1.2.1"
+Version="1.2.2"
 banner = "Usage: filtNonSpecific.rb [option] <input SAM file>\n+Filter non-specific alignment\n"
 
 out_file="tmp.sam"

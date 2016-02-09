@@ -1,4 +1,15 @@
 #! /usr/bin/ruby
+#
+# AlignDDP.rb 
+# ver.1.1.0
+# This class is used to perform 
+# "Discontinuous Dynamic Programming" algorithm
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
 class AlignDDP
   private

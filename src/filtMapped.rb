@@ -1,9 +1,17 @@
 #! /usr/bin/ruby
+#
+# filtMapped.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SAMReader.rb"
+require_relative "SAMReader.rb"
 require "optparse"
 
-Version="1.1.5"
+Version="1.1.6"
 banner = "Usage: filtMapped.rb [option] <input SAM file>\n+Filter aligned pair\n"
 
 out_file="tmp.sam"

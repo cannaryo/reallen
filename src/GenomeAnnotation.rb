@@ -1,9 +1,17 @@
 #! /usr/bin/ruby
+#
+# GenomeAnnotation.rb
+# ver 1.0.3
+# This class is used for searching in annotation table quickly
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
 require 'csv'
 
-# GenomeAnnotation ver 1.0.2
-#  is used for searching in annotation table quickly
 class GenomeAnnotation
   attr_reader :header
   attr_reader :table

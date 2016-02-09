@@ -1,7 +1,14 @@
 #! /usr/bin/ruby
+#
+# filtBP.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SAMReader.rb"
-require "FastqReader.rb"
+require_relative "SAMReader.rb"
 require "optparse"
 
 BPField = Struct.new("BPField", :id, :chr, :pos, :dir, :len, :side, :ter)
@@ -184,7 +191,7 @@ class BPNode
 end
 
 
-Version="1.2.6"
+Version="1.2.7"
 banner = "Usage: filtBP.rb [option] <input SAM file>\nFilter by break-point group\n"
 
 bp_cov = 2

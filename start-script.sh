@@ -43,7 +43,7 @@ REALLENROOT="/home/clc/test/reallen"
 REALLENDIR="$REALLENROOT/src"
 REFHG19="$REALLENROOT/reference/hg19.fa"
 REFHG19I="$REALLENROOT/reference/hg19.fa.fai"
-BWAHG19="$REALLENROOT/reference/bwa-hg19/bwa-hg19"
+BWAHG19="$REALLENROOT/reference/bwa-hg19"
 ANNOTATION="$REALLENROOT/resource"
 TMPDIR=`pwd`/tmp
 SAMTLS=samtools
@@ -81,14 +81,14 @@ $REALLENDIR/filtRead.rb $FILTOPT $FIRSTDATA -o $TMPDIR/${rt}.filt.sam
 $REALLENDIR/splitSoftClip.rb $TMPDIR/${rt}.filt.sam -e $TMPDIR/${rt}.um.sam -o $TMPDIR/${rt}.sc.fq
 echo
 echo "performing BWA for ${rt}.sc.fq"
-bwa mem -t 4 -O 3 -E 1 -T 20 -a $BWAHG19  $TMPDIR/${rt}.sc.fq > $TMPDIR/${rt}.sc_re.sam
+bwa mem -t4 -O3 -E1 -T20 -a $BWAHG19  $TMPDIR/${rt}.sc.fq > $TMPDIR/${rt}.sc_re.sam
 $REALLENDIR/filtNonSpecific.rb -s 10 -f 0.7 $TMPDIR/${rt}.sc_re.sam -o $TMPDIR/${rt}.sc_ns.sam
 $REALLENDIR/filtMapped.rb -l 500 -r $TMPDIR/${rt}.sc_ns.sam -o $TMPDIR/${rt}.sc_map.sam
 
 $REALLENDIR/splitRead.rb -l 100 -s 45 $TMPDIR/${rt}.um.sam -o $TMPDIR/${rt}.um.fq
 echo
 echo "performing BWA for ${rt}.um.fq"
-bwa mem -t 4 -O 3 -E 1 -T 35 -a $BWAHG19 $TMPDIR/${rt}.um.fq > $TMPDIR/${rt}.um_re.sam
+bwa mem -t4 -O3 -E1 -T35 -a $BWAHG19 $TMPDIR/${rt}.um.fq > $TMPDIR/${rt}.um_re.sam
 $REALLENDIR/filtNonSpecific.rb -s 15 -f 0.6 $TMPDIR/${rt}.um_re.sam -o $TMPDIR/${rt}.um_ns.sam
 $REALLENDIR/filtMapped.rb -l 500 -r $TMPDIR/${rt}.um_ns.sam -o $TMPDIR/${rt}.um_map.sam
 $REALLENDIR/prepDDP.rb $TMPDIR/${rt}.um_map.sam -o $TMPDIR/${rt}.um_ddp.pos
@@ -101,7 +101,7 @@ if [ -e ${rt}.bam ]
 then
     echo
     echo calculate original coverage from ${rt}.bam
-    $REALLENDIR/calc_coverage.sh $TMPDIR/${rt}.bp.bed ${rt}.bam $TMPDIR/${rt}.cov.csv
+    $REALLENDIR/calc_coverage.rb $TMPDIR/${rt}.bp.bed ${rt}.bam -o $TMPDIR/${rt}.cov.csv --samtools $SAMTLS
     COVOPT="-c $TMPDIR/${rt}.cov.csv"
 else
     echo
@@ -110,6 +110,4 @@ else
     echo "do not use -S option or prepare ${rt}.bam for calculating coverage"
 fi
 
-$REALLENDIR/bp2table.rb -d $COVOPT \
-    -g $ANNOTATION/hg19_gene_region.csv -e $ANNOTATION/hg19_exon_region.csv -i $ANNOTATION/cytoband.csv \
-    -o ${rt}.csv ${rt}.bp $BEDOPT
+$REALLENDIR/bp2table.rb -d $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT
