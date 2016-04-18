@@ -1,5 +1,14 @@
 #! /usr/bin/ruby
-# SeqTools ver.1.0.0
+#
+# SeqTools
+# ver.1.0.1
+# This class is used to various operation for sequence data
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
 class SeqTools
   def self.invert(seq)

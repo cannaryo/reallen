@@ -1,9 +1,17 @@
 #! /usr/bin/ruby
+#
+# filtFlag.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SAMReader.rb"
+require_relative "SAMReader.rb"
 require "optparse"
 
-Version="1.0.4"
+Version="1.0.5"
 banner = "Usage: filtFlag.rb [option] <flag array> <input SAM file>\n+Filter reads by flag\n"
 
 out_file="tmp.sam"

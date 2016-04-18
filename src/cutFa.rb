@@ -1,6 +1,14 @@
 #! /usr/bin/ruby
+#
+# cutFa.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
-require "SeqTools.rb"
+require_relative "SeqTools.rb"
 require "optparse"
 
 Version="1.2.0"

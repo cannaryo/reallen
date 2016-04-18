@@ -1,5 +1,14 @@
 #! /usr/bin/ruby
-# CSV reader ver.1.5.1
+#
+# CSV reader
+# ver.1.5.1
+# This class is used to read CSV data
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
 require 'csv'
 

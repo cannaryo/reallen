@@ -1,5 +1,14 @@
 #! /usr/bin/ruby
-# SAMReader ver.1.8.0
+#
+# SAMReader
+# ver.1.8.1
+# This class is used to read SAM file
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
 SamField = Struct.new("SamField", :qname, :flag, :rname, :pos, :mapq, :cigar, :rnext, :pnext, :tlen, :seq, :qual, :opt)
 

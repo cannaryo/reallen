@@ -1,9 +1,17 @@
 #! /usr/bin/ruby
+#
+# gene2bed.rb
+#
+# Copyright (c) 2016 - Ryo Kanno
+#
+# This software is released under the MIT License.
+# http://opensource.org/licenses/mit-license.php
+#
 
 require "optparse"
-require "CSVReader.rb"
+require_relative "CSVReader.rb"
 
-Version="1.0.0"
+Version="1.0.1"
 banner = "Usage: gene2bed.rb [option] <Gene List>\n+Extract region from gene symbol\n"
 
 opts={"list"=>"", "out"=>"", "annot"=>"annotation/hg19_gene_region.csv"}
