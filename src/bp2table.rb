@@ -60,10 +60,10 @@ def load_annotation_tables(keys, opts)
   tables = Hash.new
   for tag in keys
     if(opts[tag] != "")
-      printf("Load annotation data from %s .. ", opts[tag])
+      STDERR.printf("Load annotation data from %s .. ", opts[tag])
       tables[tag] = GenomeAnnotation.new
       sz = tables[tag].open(opts[tag])    
-      printf("load %d lines\n", sz)
+      STDERR.printf("load %d lines\n", sz)
     end
   end
   return tables
@@ -81,7 +81,7 @@ def sep_comma(num)
   return num.to_s.gsub(/(\d)(?=(\d{3})+(?!\d))/, '\1,')
 end
 
-Version="1.3.2"
+Version="1.3.3"
 banner = "Usage: bp2table.rb [option] <input BP file>\n+Output BP file in table format\n"
 
 opts = {"cov"=>"","bed"=>"","mode"=>"OR","out"=>"","cyto"=>"", "gene"=>"", "exon"=>"","dist"=>false,"blast"=>false}
@@ -103,8 +103,8 @@ opt.on("--blast", "output by BLAST format") {|v| opts["blast"]=true}
 opt.parse!(ARGV)
 
 exit if(ARGV.size < 1)
-printf("\nbp2table.rb %s\n",Version)
-printf("input=%s\n", ARGV[0])
+printf("\nbp2table.rb %s\n",Version) if(out_file != "")
+printf("input=%s\n", ARGV[0]) if(out_file != "")
 
 file=ARGV[0]
 input=File.open(file)
@@ -199,7 +199,7 @@ printf("%d records were witten in %s\n", csv.data.size, out_file) if(out_file !=
 
 if(opts["blast"])
   if(opts["cyto"]=="")
-    printf("! Blast format needs cytoband for correct output. Instead, rname is output\n")
+    STDERR.printf("! Blast format needs cytoband for correct output. Instead, rname is output\n")
     k_c=csv.key("chrom")
   else
     k_c=csv.key("cytoband")

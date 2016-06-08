@@ -14,14 +14,7 @@ require_relative "AlignDDP.rb"
 require_relative "SeqTools.rb"
 require "optparse"
 
-def write_data(rec, out)
-  for i in rec
-    out.print(i, "\n")
-  end
-end
-
-
-Version="1.1.5"
+Version="1.1.6"
 banner = "Usage: DDP.rb [option] <reference> <input SAM file> <position file>\n+DDP alignment\n"
 
 out_file="tmp.sam"
@@ -44,7 +37,7 @@ ref_file=File.open(ARGV[0])
 ref_index=Hash.new
 
 if(ref_index_file==nil)
-  printf("Preparing index...\n")
+  printf("DDP > Preparing index...\n")
   while(d=ref_file.gets)
     if(d=~/^>(\w+)$/)
       k=$1
@@ -77,7 +70,6 @@ sam=SAMReader.new
 sam.open(ARGV[1])
 
 out=SAMWriter.new(out_file)
-#out=File.open(out_file, "w")
 
 pos_data=Hash.new
 File.open(ARGV[2]).each_line do |i|
@@ -92,7 +84,6 @@ rec=Array.new
 c_d,c_n=0,0
 
 while true
-  STDOUT.flush
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   
@@ -135,9 +126,6 @@ while true
     cigs=cig.split(" ")
     next if(cigs.size<2)
 
-#    p alignment, cigs, pos_data[k]
-#    print(si," ",sj," ",lbi," ",lbj," ",rbi," ",rbj," ",ei," ",ej,"\n")
-
     p_d=pos_data[k][0,4]
     d_l=SamField.new(k+":LF", 0, p_d[0], p_d[1].to_i, d.mapq, cigs[0], "*", 0, 0, d.seq[sj...lbj], d.qual[sj...lbj], "")
     if(p_d[2] == "r")
@@ -172,21 +160,19 @@ while true
     rec.push(d_l)
     rec.push(d_r)
 
-#    p d.seq.size, d_l.seq.size, d_r.seq.size
-
     # SamField = Struct.new("SamField", :qname, :flag, :rname, :pos, :mapq, :cigar, :rnext, :pnext, :tlen, :seq, :qual, :opt)
   end
 
 #  c_d += sam.size
   c_n += rec.size
-  printf("Write records: %d / %d\r", c_n, c_d)
-#  write_data(rec, out)
+  STDERR.printf("DDP > Write records: %d / %d\r", c_n, c_d)
   out.write_data(rec)
   rec.clear
   sam.clear  
 end
 
-printf("\n%d records (%d pair) in %d were witten in %s\n", c_n, c_n/2, c_d, out_file)
+STDERR.print("\n")
+printf("%d records (%d pair) in %d were witten in %s\n", c_n, c_n/2, c_d, out_file)
 
 ref_file.close
 sam.close

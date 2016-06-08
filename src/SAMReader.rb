@@ -1,7 +1,7 @@
 #! /usr/bin/ruby
 #
 # SAMReader
-# ver.1.8.1
+# ver.1.8.2
 # This class is used to read SAM file
 #
 # Copyright (c) 2016 - Ryo Kanno
@@ -153,7 +153,7 @@ class SAMWriter
 
   def write_head(header)
     if @is_head
-      print("Header has been already written in files: skip [write_head]\n")
+      STDERR.print("Header has been already written in files: skip [write_head]\n")
       return
     end
     for d in header
@@ -196,7 +196,7 @@ class SAMDecoder
         seq=seq[n..-1]
       when "H"
       else
-        print(" !! ",t,"\n")
+        STDERR.print("! Invalid CIGAR type: ",t,"\n")
       end
     end
     return str
@@ -290,7 +290,7 @@ class SAMDecoder
         qual=qual[n..-1]
       when "H"
       else
-        print(" !! ",t,"\n")
+        STDERR.print("! Invalid CIGAR type: ",t,"\n")
       end
     end
     return qt

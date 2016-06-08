@@ -41,27 +41,20 @@ def filter_data(dat, m_d, m_i, m_id, m_s, m_m, umap, rev)
   return out
 end
 
-Version="1.7.1"
+Version="1.7.2"
 banner = "Usage: filtRead.rb [option] <input SAM file>\n+Filter reads by cigar\n"
 
-min_del = nil
-min_ins = nil
-min_indel = nil
-min_softclip = nil
-min_match = nil
-f_rev = false
-unmapped = false
-out_file="tmp.sam"
+opts = {"del"=>nil, "ins"=>nil, "indel"=>nil, "softclip"=>nil, "match"=>nil, "rev"=>false, "unmapped"=>false, "out"=>"tmp.sam"}
 
 opt = OptionParser.new(banner)
-opt.on("-d N","Keep deletion >= N") {|v| min_del=v.to_i }
-opt.on("-i N","Keep insertion >= N") {|v| min_ins=v.to_i }
-opt.on("--indel N","Keep indel >= N") {|v| min_indel=v.to_i }
-opt.on("-s N","Keep softclip >= N") {|v| min_softclip=v.to_i }
-opt.on("-m N","Keep match >= N") {|v| min_match=v.to_i }
-opt.on("-r","Reverse inequality sign for [dism]") {|v| f_rev=true}
-opt.on("-u","Keep unmapped read") { |v| unmapped = true }
-opt.on("-o file","output file (default: tmp.sam)") {|v| out_file=v}
+opt.on("-d N","Keep deletion >= N") {|v| opts["del"] = v.to_i }
+opt.on("-i N","Keep insertion >= N") {|v| opts["ins"] = v.to_i }
+opt.on("--indel N","Keep indel >= N") {|v| opts["indel"] = v.to_i }
+opt.on("-s N","Keep softclip >= N") {|v| opts["softclip"] = v.to_i }
+opt.on("-m N","Keep match >= N") {|v| opts["match"] = v.to_i }
+opt.on("-r","Reverse inequality sign for [dism]") {|v| opts["rev"] = true }
+opt.on("-u","Keep unmapped read") { |v| opts["inmapped"] = true }
+opt.on("-o file","output file (default: tmp.sam)") {|v| opts["out"] = v}
 
 opt.parse!(ARGV)
 
@@ -74,7 +67,7 @@ MaxLine=1000
 file = ARGV[0]
 sam=SAMReader.new
 sam.open(file)
-out=SAMWriter.new(out_file)
+out=SAMWriter.new(opts["out"])
 
 sam.read_head
 out.write_head(sam.head)
@@ -82,18 +75,18 @@ out.write_head(sam.head)
 c_n,c_d=0,0
 
 while true
-  STDOUT.flush
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
 
-  dat=filter_data(sam.data, min_del, min_ins, min_indel, min_softclip, min_match, unmapped, f_rev )
+  dat=filter_data(sam.data, opts["del"], opts["ins"], opts["indel"], opts["softclip"], opts["match"], opts["unmapped"], opts["rev"] )
   c_n += dat.size
   c_d += sam.size
   out.write_data(dat)
-  printf("Write records: %d / %d\r", c_n, c_d)
+  STDERR.printf("filtRead > Write records: %d / %d\r", c_n, c_d)
   sam.clear
 end
-printf("\n%d records in %d were witten in %s\n", c_n, c_d, out_file)
+STDERR.print("\n")
+printf("%d records in %d were witten in %s\n", c_n, c_d, opts["out"])
 
 sam.close
 out.close

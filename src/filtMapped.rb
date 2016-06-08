@@ -11,11 +11,10 @@
 require_relative "SAMReader.rb"
 require "optparse"
 
-Version="1.1.6"
+Version="1.1.7"
 banner = "Usage: filtMapped.rb [option] <input SAM file>\n+Filter aligned pair\n"
 
 out_file="tmp.sam"
-
 m_len=-1
 f_rp=false
 
@@ -44,7 +43,6 @@ rec = Array.new
 c_d,c_n=0,0
 
 while true
-  STDOUT.flush
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   
@@ -73,13 +71,14 @@ while true
 
   c_d += sam.size
   c_n += rec.size
-  printf("Write records: %d / %d\r", c_n, c_d)
+  STDERR.printf("filtMapped > Write records: %d / %d\r", c_n, c_d)
   out.write_data(rec)
   rec.clear
   sam.clear  
 end
 
-printf("\n%d records in %d were witten in %s\n", c_n, c_d, out_file)
+STDERR.print("\n")
+printf("%d records in %d were witten in %s\n", c_n, c_d, out_file)
 
 sam.close
 out.close

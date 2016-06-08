@@ -10,7 +10,7 @@
 
 require "optparse"
 
-Version="1.1.0"
+Version="1.1.2"
 banner = "Usage: calcCoverage.rb [option] <input BED file> <original BAM file>\n+calculate coverage at each position\n"
 
 out_file="tmp.cov.csv"
@@ -29,8 +29,8 @@ printf("\ncalcCoverage.rb %s\n",Version)
 printf("input=%s, BAM=%s\n", ARGV[0],ARGV[1])
 
 if(File.exist?(tmp_file))
-  printf("Cannot write %s\n",tmp_file)
-  printf("File exist\n")
+  STDERR.printf("Cannot write %s\n",tmp_file)
+  STDERR.printf("File exist\n")
   exit
 end
 
@@ -52,5 +52,7 @@ File.open(out_file,"w") do |fp|
     fp.printf("%s,%d,%d,%s,%s,%.2f\n", d[0],d[1],d[2],d[3],d[4],d[5])
   end
 end
+
+printf("%d records were written in %s\n", data_all.size, out_file);
 
 File.delete(tmp_file)

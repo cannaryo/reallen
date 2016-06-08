@@ -191,21 +191,17 @@ class BPNode
 end
 
 
-Version="1.2.7"
+Version="1.2.8"
 banner = "Usage: filtBP.rb [option] <input SAM file>\nFilter by break-point group\n"
 
-bp_cov = 2
-out_file=""
-bp_file="tmp.bp"
-bed_file=""
-bp_red=10
+opts = {"cov"=>2, "size"=>10, "sam"=>"", "bp"=>"tmp.bp", "bed"=>""}
 
 opt = OptionParser.new(banner)
-opt.on("-c cover", "minimum coverage (default: 2)") {|v| bp_cov=v.to_i }
-opt.on("-r size", "BP redundancy (default: 10)") {|v| bp_red=v.to_i}
-opt.on("-o file", "output SAM file (default: None)") {|v| out_file=v}
-opt.on("-b file", "output BED file (default: None)") {|v| bed_file=v}
-opt.on("-p file", "output BP position file (default: tmp.bp)") {|v| bp_file=v}
+opt.on("-c cover", "minimum coverage (default: 2)") {|v| opts["cov"]=v.to_i }
+opt.on("-r size", "BP redundancy (default: 10)") {|v| opts["size"]=v.to_i}
+opt.on("-o file", "output SAM file (default: None)") {|v| opts["sam"]=v}
+opt.on("-b file", "output BED file (default: None)") {|v| opts["bed"]=v}
+opt.on("-p file", "output BP position file (default: tmp.bp)") {|v| opts["bp"]=v}
 
 opt.parse!(ARGV)
 
@@ -217,7 +213,7 @@ file = ARGV[0]
 sam=SAMReader.new
 sam.open(file)
 
-bp_out=File.open(bp_file, "w")
+bp_out=File.open(opts["bp"], "w")
 
 MaxLine=1000
 sam.read_head
@@ -227,7 +223,6 @@ ids = Hash.new
 c_d,c_n=0,0
 
 while true
-  STDOUT.flush
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   for d in sam.data
@@ -235,43 +230,44 @@ while true
     next if( k==nil || (d.flag & 256 == 256))
     if(ids.key?(k))
       if(d.rname != "*" && ids[k].rname != "*")
-        c_n+=add_to_node(nodes, d, ids[k], bp_red)
+        c_n+=add_to_node(nodes, d, ids[k], opts["size"])
       end
       ids.delete(k)
     else
       ids[k] = d
     end
-  end
-  
+  end  
   c_d += sam.size
-  printf("Find BP node: %d / %d sequences\r", c_n, c_d)
+  STDERR.printf("filtBP > Find BP node: %d / %d sequences\r", c_n, c_d)
   sam.clear 
 end
 
-rec_bp=filter_by_cover(nodes, bp_cov)
-printf("\n%d nodes in %d were written in %s\n",rec_bp.size, c_n, bp_file)
+rec_bp=filter_by_cover(nodes, opts["cov"])
+
+STDERR.print("\n")
+printf("%d nodes in %d were written in %s\n",rec_bp.size, c_n, opts["bp"])
 
 for d in rec_bp
   rec.concat(d.get_data)
   d.show_by_pos(bp_out)
 end
 
-unless(bed_file =="")
-  File.open(bed_file,"w") do |f|
-    f.printf("track name=\"%s\" description=\"Filtered_BP_position\" type=bedDetail\n", file)
+unless(opts["bed"] =="")
+  File.open(opts["bed"],"w") do |fp|
+    fp.printf("track name=\"%s\" description=\"Filtered_BP_position\" type=bedDetail\n", file)
     for d in rec_bp
-      d.show_by_bed(f, bp_red)
+      d.show_by_bed(fp, opts["size"])
     end
   end
-  printf("%d nodes in %d were written in %s\n",rec_bp.size, c_n, bed_file)
+  printf("%d nodes in %d were written in %s\n",rec_bp.size, c_n, opts["bed"])
 end
 
-unless(out_file == "")
-  out=SAMWriter.new(out_file)
+unless(opts["sam"] == "")
+  out=SAMWriter.new(opts["sam"])
   out.write_head(sam.head)
   out.write_data(rec)
   out.close
-  printf("%d sequences in %d were written in %s\n", rec.size, c_d, out_file)
+  printf("%d sequences in %d were written in %s\n", rec.size, c_d, opts["sam"])
 end
 
 sam.close

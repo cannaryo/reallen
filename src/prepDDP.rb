@@ -89,7 +89,6 @@ c_d,c_n=0,0
 
 
 while true
-  STDOUT.flush
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   
@@ -115,13 +114,14 @@ while true
 
   c_d += sam.size
   c_n += rec.size
-  printf("Write records: %d / %d\r", c_n, c_d)
+  STDERR.printf("prepDDP > Write records: %d / %d\r", c_n, c_d)
   write_data(rec, out)
   rec.clear
   sam.clear  
 end
 
-printf("\n%d records in %d (%d pair) were witten in %s\n", c_n, c_d, c_d/2, out_file)
+STDERR.print("\n")
+printf("%d records in %d (%d pair) were witten in %s\n", c_n, c_d, c_d/2, out_file)
 
 sam.close
 out.close

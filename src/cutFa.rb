@@ -11,7 +11,7 @@
 require_relative "SeqTools.rb"
 require "optparse"
 
-Version="1.2.0"
+Version="1.2.2"
 banner = "Usage: cutFa.rb [option] <in.fa> <region file>\n+Cut sequence\n"
 
 opts={"qname"=>"seq","show_format"=>false,"index"=>nil, "sparse"=>nil,"out"=>"tmp.fa"}
@@ -26,7 +26,7 @@ opt.parse!(ARGV)
 
 if(ARGV.size < 2 || opts["show_format"])
   printf("CutFa.rb cut sequences in fasta file and make merged one\n")
-  printf("[-h] shows details information\n")
+  printf("[-h] shows details\n")
   printf("----------------------\n")
   printf("region file format is:\n")
   printf("qname,start,end, +/-\n")
@@ -39,11 +39,11 @@ if(ARGV.size < 2 || opts["show_format"])
   exit
 end
 
-
 ref_file=File.open(ARGV[0])
 region_file=File.open(ARGV[1])
 ref_index=Hash.new
 
+# make index of fasta file
 if(opts["index"]==nil)
   printf("Preparing index...\n")
   while(d=ref_file.gets)

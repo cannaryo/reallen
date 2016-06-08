@@ -11,7 +11,7 @@
 require_relative "SAMReader.rb"
 require "optparse"
 
-Version="1.0.2"
+Version="1.0.3"
 banner = "Usage: mergeSAM.rb [option] <primary SAM file> <secondery SAM file>\n+Merge two SAM files\n"
 
 out_file="tmp.sam"
@@ -43,9 +43,8 @@ out.write_head(sam_1.head)
 ids = Hash.new
 rec = Array.new
 c_d,c_n=0,0
-printf("Wrinting from %s\n", file_1)
+STDERR.printf("Wrinting from %s\n", file_1)
 while true
-  STDOUT.flush
   MaxLine.times { sam_1.read_record }
   
   break if(sam_1.size==0)  
@@ -56,16 +55,15 @@ while true
   end
   c_d += sam_1.size
   c_n += rec.size
-  printf("Write records: %d / %d\r", c_n, c_d)
+  STDERR.printf("mergeSAM > Write records: %d / %d\r", c_n, c_d)
   out.write_data(rec)
   rec.clear
   sam_1.clear  
 end
 
-printf("\nWrinting from %s\n", file_2)
+STDERR.printf("\nWrinting from %s\n", file_2)
 c2_d,c2_n=0,0
 while true
-  STDOUT.flush
   MaxLine.times { sam_2.read_record }
   
   break if(sam_2.size==0)  
@@ -75,13 +73,14 @@ while true
   end
   c2_d += sam_2.size
   c2_n += rec.size
-  printf("Write records: %d / %d\r", c2_n, c2_d)
+  STDERR.printf("mergeSAM > Write records: %d / %d\r", c2_n, c2_d)
   out.write_data(rec)
   rec.clear
   sam_2.clear  
 end
 
-printf("\n%d records in %d were witten in %s\n", c_n+c2_n, c_d+c2_d, out_file)
+STDERR.print("\n")
+printf("%d records in %d were witten in %s\n", c_n+c2_n, c_d+c2_d, out_file)
 
 sam_1.close
 sam_2.close

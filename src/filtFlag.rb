@@ -43,13 +43,16 @@ if(ARGV.size < 2 || show_help)
   exit
 end
 
+printf("\nfiltFlag.rb %s\n",Version)
+printf("input=%s\n", ARGV[1])
+
 MaxLine=1000
 
 flags=ARGV[0]
 file = ARGV[1]
 
 if(flags.size!=12)
-  print("flag array must be specified 12 degit format\n")
+  STDERR.print("flag array must be specified 12 degit format\n")
   exit
 end
 
@@ -73,7 +76,6 @@ for i in 0...12
 end
 
 while true
-  STDOUT.flush
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   for d in sam.data
@@ -83,13 +85,14 @@ while true
   end
   c_d += sam.size
   c_n += rec.size
-  printf("Write records: %d / %d\r", c_n, c_d)
+  STDERR.printf("filtFlag > Write records: %d / %d\r", c_n, c_d)
   out.write_data(rec)
   rec.clear
   sam.clear
 end
 
-printf("\n%d records in %d were witten in %s\n", c_n, c_d, out_file)
+STDERR.print("\n")
+printf("%d records in %d were witten in %s\n", c_n, c_d, out_file)
 
 sam.close
 out.close

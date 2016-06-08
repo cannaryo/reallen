@@ -46,7 +46,6 @@ c_d=0
 c_n=0
 
 while true
-  STDOUT.flush
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   for d in sam.data
@@ -64,11 +63,11 @@ while true
   c_d += sam.size  
   if(f_sorted)
     c_n+=ids.size
-    printf("Write records: %d / %d\r", c_n, c_d)
+    STDERR.printf("filtNonSpecific > Write records: %d / %d\r", c_n, c_d)
     out.write_data(ids.values)
     ids.clear
   else
-    printf("Check records: %d / %d\r", ids.size, c_d)
+    STDERR.printf("filtNonSpecific > Check records: %d / %d\r", ids.size, c_d)
   end
   sam.clear  
 end
@@ -77,7 +76,8 @@ ids[id_tmp[0]] = id_tmp[1] if(id_tmp[1] != nil && SAMDecoder.get_option(id_tmp[1
 c_n+=ids.size
 
 out.write_data(ids.values)
-printf("\n%d records in %d were witten in %s\n", c_n, c_d, out_file)
+STDERR.print("\n")
+printf("%d records in %d were witten in %s\n", c_n, c_d, out_file)
 
 sam.close
 out.close

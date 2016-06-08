@@ -11,7 +11,7 @@
 require_relative "SAMReader.rb"
 require "optparse"
 
-Version="1.0.0"
+Version="1.0.1"
 banner = "Usage: sampleRead.rb [option] <input SAM file>\n+Sample read for test\n"
 
 sample_rate = 0.5
@@ -41,7 +41,6 @@ out.write_head(sam.head)
 c_n,c_d=0,0
 
 while true
-  STDOUT.flush
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   dat = Array.new
@@ -53,10 +52,11 @@ while true
   c_n += dat.size
   c_d += sam.size
   out.write_data(dat)
-  printf("Write records: %d / %d\r", c_n, c_d)
+  STDERR.printf("sampleRead > Write records: %d / %d\r", c_n, c_d)
   sam.clear
 end
-printf("\n%d records in %d were witten in %s\n", c_n, c_d, out_file)
+STDERR.print("\n")
+printf("%d records in %d were witten in %s\n", c_n, c_d, out_file)
 
 sam.close
 out.close
