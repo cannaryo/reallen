@@ -55,7 +55,7 @@ while true
       id_tmp[1] = nil if(id_tmp[1] != nil && (SAMDecoder.get_option(id_tmp[1],"AS") - SAMDecoder.get_option(d,"AS")).abs < min_score)
     elsif(!f_sorted && ids.key?(k))
       ids.delete(k) if((SAMDecoder.get_option(ids[k],"AS") - SAMDecoder.get_option(d,"AS")).abs < min_score)
-    elsif(d.flag & 256 != 256)
+    elsif((d.flag & 256 != 256) && (d.flag & 2048 != 2048))
       ids[id_tmp[0]] = id_tmp[1] if(id_tmp[1] != nil && SAMDecoder.get_option(id_tmp[1],"AS").to_f/id_tmp[1].seq.size >= min_frac)
       id_tmp = [k,d]
     end

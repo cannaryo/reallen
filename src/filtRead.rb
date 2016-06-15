@@ -20,9 +20,10 @@ def count_cigar(cigar)
   return cc_hash
 end
 
-def filter_data(dat, m_d, m_i, m_id, m_s, m_m, umap, rev)
+def filter_data(dat, m_d, m_i, m_id, m_s, m_m, umap, rev, primary)
   out = Array.new
   for i in dat
+    next if(primary && (i.flag & 2304 != 0)) # 256 + 2048
     cc_hash=count_cigar(i.cigar)
     if(umap && i.rname == "*")
       out.push(i)
@@ -44,16 +45,18 @@ end
 Version="1.7.2"
 banner = "Usage: filtRead.rb [option] <input SAM file>\n+Filter reads by cigar\n"
 
-opts = {"del"=>nil, "ins"=>nil, "indel"=>nil, "softclip"=>nil, "match"=>nil, "rev"=>false, "unmapped"=>false, "out"=>"tmp.sam"}
+opts = {"del"=>nil, "ins"=>nil, "indel"=>nil, "softclip"=>nil, "match"=>nil, 
+  "rev"=>false, "unmapped"=>false, "primary"=>false, "out"=>"tmp.sam"}
 
 opt = OptionParser.new(banner)
-opt.on("-d N","Keep deletion >= N") {|v| opts["del"] = v.to_i }
-opt.on("-i N","Keep insertion >= N") {|v| opts["ins"] = v.to_i }
-opt.on("--indel N","Keep indel >= N") {|v| opts["indel"] = v.to_i }
-opt.on("-s N","Keep softclip >= N") {|v| opts["softclip"] = v.to_i }
-opt.on("-m N","Keep match >= N") {|v| opts["match"] = v.to_i }
-opt.on("-r","Reverse inequality sign for [dism]") {|v| opts["rev"] = true }
-opt.on("-u","Keep unmapped read") { |v| opts["inmapped"] = true }
+opt.on("-d N", "Keep deletion >= N") {|v| opts["del"] = v.to_i }
+opt.on("-i N", "Keep insertion >= N") {|v| opts["ins"] = v.to_i }
+opt.on("--indel N", "Keep indel >= N") {|v| opts["indel"] = v.to_i }
+opt.on("-s N", "Keep softclip >= N") {|v| opts["softclip"] = v.to_i }
+opt.on("-m N", "Keep match >= N") {|v| opts["match"] = v.to_i }
+opt.on("-r", "Reverse inequality sign for [dism]") {|v| opts["rev"] = true }
+opt.on("-u", "Keep unmapped read") { |v| opts["inmapped"] = true }
+opt.on("-p", "Pass only primary alignment") { |v| opts["primary"] = true}
 opt.on("-o file","output file (default: tmp.sam)") {|v| opts["out"] = v}
 
 opt.parse!(ARGV)
@@ -78,7 +81,8 @@ while true
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
 
-  dat=filter_data(sam.data, opts["del"], opts["ins"], opts["indel"], opts["softclip"], opts["match"], opts["unmapped"], opts["rev"] )
+  dat=filter_data(sam.data, opts["del"], opts["ins"], opts["indel"], opts["softclip"], 
+                  opts["match"], opts["unmapped"], opts["rev"], opts["primary"] )
   c_n += dat.size
   c_d += sam.size
   out.write_data(dat)
