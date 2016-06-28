@@ -2,17 +2,21 @@
 
 function usage()
 {
-    echo "usage: start-script.sh [-SF] [-p <NP>] <in.bam>"
+    echo "usage:ReALLEN [-SF] [-b <in.bed>] <in.bam>"
     echo "  -S          input file is SAM format instead of BAM format"
     echo "  -F          fast mode"
     echo "  -p NUMBER   Number of processor"
+    echo "  -b FILE     set region file"
     exit 0
 }
 
 # Check option
-while getopts FSp:h option
+while getopts FSp:b:h option
 do
     case ${option} in
+	b)
+	    ARG1=${OPTARG}
+	    ;;
 	S)
 	    ARG2=TRUE
 	    ;;
@@ -48,9 +52,15 @@ REALLENDIR="$REALLENROOT/src"
 REFHG19="$REALLENROOT/reference/hg19.fa"
 REFHG19I="$REALLENROOT/reference/hg19.fa.fai"
 BWAHG19="$REALLENROOT/reference/bwa-hg19"
-TMPDIR=`pwd`/temporary_files_reallen
+ANNOTATION="$REALLENROOT/resource"
+TMPDIR=`pwd`/tmp
 SAMTLS=samtools
 BWA=bwa
+
+if [ $ARG1 ]
+then
+    BEDOPT="-b $ARG1"
+fi
 
 if [ ! -e $TMPDIR ]
 then
@@ -102,3 +112,18 @@ $REALLENDIR/DDP.rb $REFHG19 -i $REFHG19I $TMPDIR/${rt}.um.sam $TMPDIR/${rt}.um_d
 
 $REALLENDIR/mergeSAM.rb $TMPDIR/${rt}.sc_map.sam $TMPDIR/${rt}.um_ddp.sam -o $TMPDIR/${rt}.merge.sam
 $REALLENDIR/filtBP.rb -r 30 $TMPDIR/${rt}.merge.sam -b $TMPDIR/${rt}.bp.bed -o $TMPDIR/${rt}.bp.sam -p ${rt}.bp
+
+if [ -e ${rt}.bam ]
+then
+    echo
+    echo calculate original coverage from ${rt}.bam
+    $REALLENDIR/calc_coverage.rb $TMPDIR/${rt}.bp.bed ${rt}.bam -o $TMPDIR/${rt}.cov.csv --samtools $SAMTLS
+    COVOPT="-c $TMPDIR/${rt}.cov.csv"
+else
+    echo
+    echo "original bam file cannot be specified"
+    echo "skip coverage calculation"
+    echo "do not use -S option or prepare ${rt}.bam for calculating coverage"
+fi
+
+$REALLENDIR/bp2table.rb -d $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT
