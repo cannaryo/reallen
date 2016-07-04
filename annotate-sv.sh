@@ -3,20 +3,32 @@
 function usage()
 {
     echo "usage: annotate-sv.sh [-r <in.bed>] [-b <in.bam>] <in.bp>"
-    echo "  -b FILE     specify original BAM file (default: root name of bp file)"
-    echo "  -r FILE     set region BED file"
+    echo "  -d FILE     specify original BAM file (default: <root>.bam)"
+    echo "  -b FILE     set region BED file"
+    echo "  -s          apply stringent coverage filter"
+    echo "  -m          just mark filter-records (do not remove)"
+    echo "  -o option   directly give other options (string) to bp2table"
     exit 0
 }
 
 # Check option
-while getopts b:r:h option
+while getopts d:b:o:smh option
 do
     case ${option} in
-	r)
+	b)
 	    ARG1=${OPTARG}
 	    ;;
-	b)
+	d)
 	    ARG2=${OPTARG}
+	    ;;
+	s)
+	    FILTOPT="--cov-filter 4 --cov-rate-filter 0.02"
+	    ;;
+	o)
+	    RESTOPT=${OPTARG}
+	    ;;
+	m)
+	    KEEPOPT="-m"
 	    ;;
 	h)
 	    usage
@@ -45,15 +57,13 @@ ANNOTATION="$REALLENROOT/resource"
 TMPDIR=`pwd`/temporary_files_reallen
 SAMTLS=samtools
 
-if [ $ARG1 ]
-then
+if [ $ARG1 ]; then
     BEDOPT="-b $ARG1"
 fi
 
 rt=`basename $1 .bp`
 
-if [ $ARG2 ]
-then
+if [ $ARG2 ]; then
     COVBAM=$ARG2
 else
     COVBAM=${rt}.bam
@@ -64,20 +74,28 @@ then
     mkdir $TMPDIR
 fi
 
-if [ -e $COVBAM ]
+if [ -e $TMPDIR/${rt}.cov.csv ]
 then
-    if [ ! -e $TMPDIR/${rt}.bp.bed ]
-    then
-	$REALLENDIR/bp2bed.rb -s 1 -o $TMPDIR/${rt}.bp.bed $1
-    fi
-    echo
-    echo calculate original coverage from $COVBAM
-    $REALLENDIR/calc_coverage.rb $TMPDIR/${rt}.bp.bed $COVBAM -o $TMPDIR/${rt}.cov.csv --samtools $SAMTLS
+    echo "$TMPDIR/${rt}.cov.csv was found"
+    echo "use existing coverage bed file"
     COVOPT="-c $TMPDIR/${rt}.cov.csv"
 else
-    echo
-    echo "cannot find original bam file: $COVBAM"
-    echo "skip coverage calculation"
+    if [ -e $COVBAM ]
+    then
+	if [ ! -e $TMPDIR/${rt}.bp.bed ]
+	then
+	    $REALLENDIR/bp2bed.rb -s 1 -o $TMPDIR/${rt}.bp.bed $1
+	fi
+	echo
+	echo calculate original coverage from $COVBAM
+	$REALLENDIR/calc_coverage.rb $TMPDIR/${rt}.bp.bed $COVBAM -o $TMPDIR/${rt}.cov.csv --samtools $SAMTLS
+	COVOPT="-c $TMPDIR/${rt}.cov.csv"
+    else
+	echo
+	echo "cannot find original bam file: $COVBAM"
+	echo "skip coverage calculation"
+    fi
 fi
 
-$REALLENDIR/bp2table.rb -d $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT
+echo "$REALLENDIR/bp2table.rb -d -t 100000 $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT $FILTOPT $KEEPOPT $RESTOPT"
+$REALLENDIR/bp2table.rb -d -t 100000 $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT $FILTOPT $KEEPOPT $RESTOPT
