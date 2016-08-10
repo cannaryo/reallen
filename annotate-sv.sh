@@ -2,7 +2,7 @@
 
 function usage()
 {
-    echo "usage: annotate-sv.sh [-r <in.bed>] [-b <in.bam>] <in.bp>"
+    echo "usage: annotate-sv.sh [-b <in.bed>] [-d <in.bam>] <in.bp>"
     echo "  -d FILE     specify original BAM file (default: <root>.bam)"
     echo "  -b FILE     set region BED file"
     echo "  -s          apply stringent coverage filter"

@@ -21,10 +21,12 @@ out_file="tmp.sam"
 ref_index_file=nil
 ref_margin=20
 ref_sparse=nil
+m_frac=0.0
 
 opt = OptionParser.new(banner)
 opt.on("-i ref_index", "Reference index file (to skip indexing)") {|v| ref_index_file=v}
 opt.on("-o file","output file (default: tmp.sam)") {|v| out_file=v}
+opt.on("-f fraction", "minimum alignment score fraction (default:0.0)") {|v| m_frac=v.to_f}
 opt.on("--margin-length length", "margin of reference cut (default: 20)") {|v| ref_margin=v.to_f} 
 opt.on("--reference-sparse N", "set sparse code each N charactor in reference") {|v| ref_sparse=v.to_f}
 opt.parse!(ARGV)
@@ -123,6 +125,7 @@ while true
     fin_score = align_ddp.fin_score
     c_d += 2
     next if first_score <= fin_score
+    next if (-1.0*fin_score/d.seq.size < m_frac)
     cigs=cig.split(" ")
     next if(cigs.size<2)
 
@@ -155,7 +158,7 @@ while true
     d_l.pnext=d_r.pos
     d_r.rnext=d_l.rname
     d_r.pnext=d_l.pos
-    d_r.opt=d_l.opt="AS:i:"+align_ddp.fin_score.to_s
+    d_r.opt=d_l.opt="AS:i:"+(-1 * align_ddp.fin_score).to_s
 
     rec.push(d_l)
     rec.push(d_r)

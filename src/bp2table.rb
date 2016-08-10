@@ -247,8 +247,14 @@ while(l=input.gets)
         when "sv_type"
           dat[k] = find_sv_type(pp[1], pp[2].to_i, pp[4], rr[1], rr[2].to_i, rr[4], opts["type"])
         when "sv_size"
-          if(pp[1] == rr[1])
+          sv_type = find_sv_type(pp[1], pp[2].to_i, pp[4], rr[1], rr[2].to_i, rr[4], opts["type"])
+          case sv_type
+          when "DEL"
+            dat[k] = (pp[2].to_i - rr[2].to_i).abs - 1
+          when "INV"
             dat[k] = (pp[2].to_i - rr[2].to_i).abs
+          when "DUP"
+            dat[k] = (pp[2].to_i - rr[2].to_i).abs + 1
           else
             dat[k] = "-"
           end

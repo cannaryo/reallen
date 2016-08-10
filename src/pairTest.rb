@@ -45,6 +45,10 @@ class MeasureDistance
     return 0
   end
 
+  def diff_alignment(dat)
+    return (dat.seq.size - SAMDecoder.get_aligned_ref_length(dat)).abs
+  end
+
   def get_id(dat)
     k,tag=dat.qname.scan(/^([^:]+(?::[^:]+){1,9})[:\/]([^:]*)$/).first
     return k
@@ -58,12 +62,13 @@ class MeasureDistance
     end        
     l_bp = bp_position(l_dat)
     r_bp = bp_position(r_dat)
+    l_bp, r_bp = r_bp, l_bp if(l_bp == l_dat.pos)
     id = get_id(l_dat)
     if( @use_file && @hash.key?(id) )
       size = @hash[id] - (l_dat.seq.size + r_dat.seq.size)
-      return false if((l_bp - r_bp).abs > min_len + size)      
+      return false if((r_bp - l_bp - size).abs > min_len)      
     else
-      return false if((l_bp - r_bp).abs > min_len)      
+      return false if((r_bp - l_bp).abs > min_len)      
     end
     return true
   end
@@ -117,7 +122,7 @@ while true
     next if( k==nil || (d.flag & 256 == 256))
     if(ids.key?(k))
       if(d.rname != "*" && ids[k].rname != "*")
-        if( !measure_dist.check_pair(d, ids[k], m_len) )
+        if( m_len > 0 && !measure_dist.check_pair(d, ids[k], m_len) )
           if(f_ref_pos)
             d.rnext = ids[k].rname
             ids[k].rnext = d.rname
