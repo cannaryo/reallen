@@ -3,7 +3,9 @@
 function usage()
 {
     echo "usage: annotate-sv.sh [-b <in.bed>] [-d <in.bam>] <in.bp>"
+    echo "  -B          output by BLAST-like format"
     echo "  -d FILE     specify original BAM file (default: <root>.bam)"
+    echo "  -c FILE     specify config file [reallen.config]"
     echo "  -b FILE     set region BED file"
     echo "  -s          apply stringent coverage filter"
     echo "  -m          just mark filter-records (do not remove)"
@@ -12,14 +14,20 @@ function usage()
 }
 
 # Check option
-while getopts d:b:o:smh option
+while getopts Bd:c:b:o:smh option
 do
     case ${option} in
+	B)
+	    BLASTOPT="--blast"
+	    ;;
 	b)
 	    ARG1=${OPTARG}
 	    ;;
 	d)
 	    ARG2=${OPTARG}
+	    ;;
+	c)
+	    ARG3=${OPTARG}
 	    ;;
 	s)
 	    FILTOPT="--cov-filter 4 --cov-rate-filter 0.02"
@@ -50,12 +58,14 @@ SDIR="$0"
 if [ -L $SDIR ] ; then
     SDIR=$(readlink $SDIR)
 fi
-REALLENROOT=$(cd $(dirname $SDIR); pwd)
+SCRIPTPATH=$(cd $(dirname $SDIR); pwd)
 
-REALLENDIR="$REALLENROOT/src"
-ANNOTATION="$REALLENROOT/resource"
-TMPDIR=`pwd`/temporary_files_reallen
-SAMTLS=samtools
+if [ -z $ARG3 ] ; then
+    CONFIGFILE="$SCRIPTPATH/reallen.config"
+else
+    CONFIGFILE=$ARG3
+fi
+source $CONFIGFILE
 
 if [ $ARG1 ]; then
     BEDOPT="-b $ARG1"
@@ -97,5 +107,5 @@ else
     fi
 fi
 
-echo "$REALLENDIR/bp2table.rb -d -t 100000 $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT $FILTOPT $KEEPOPT $RESTOPT"
-$REALLENDIR/bp2table.rb -d -t 100000 $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT $FILTOPT $KEEPOPT $RESTOPT
+echo "$REALLENDIR/bp2table.rb -d -t 100000 $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT $FILTOPT $KEEPOPT $BLASTOPT $RESTOPT"
+$REALLENDIR/bp2table.rb -d -t 100000 $COVOPT --annotation $ANNOTATION -o ${rt}.csv ${rt}.bp $BEDOPT $FILTOPT $KEEPOPT $BLASTOPT $RESTOPT

@@ -2,22 +2,26 @@
 
 function usage()
 {
-    echo "usage: reallen-fast [-p <NP>] <in.bam>"
-    echo "  -p NUMBER   Number of processor"
+    echo "usage: reallen-fast [-p <NP>][-s <size>][-c <FILE>] <in.bam>"
+    echo "  -p NUMBER   Number of processor [1]"
+    echo "  -c FILE     specify config file [reallen.config]"
     echo "  -s SIZE     Minimum SV size [40]"
     echo "  -h          Show help message and exit"
     exit 0
 }
 
 # Check option
-while getopts p:s:h option
+while getopts p:c:s:h option
 do
     case ${option} in
 	p)
 	    ARG1=${OPTARG}
 	    ;;
-	s)
+	c)
 	    ARG2=${OPTARG}
+	    ;;
+	s)
+	    ARG3=${OPTARG}
 	    ;;
 	h)
 	    usage
@@ -35,15 +39,18 @@ then
 fi
 
 # Set variables
-REALLENROOT="/home/clc/test/reallen"
-REALLENDIR="$REALLENROOT/src"
-REFHG19="$REALLENROOT/reference/hg19.fa"
-REFHG19I="$REALLENROOT/reference/hg19.fa.fai"
-BWAHG19="$REALLENROOT/reference/bwa-hg19"
-FASTFILT="/home/clc/test/bamfilter/bin/bamfilter"
-TMPDIR=`pwd`/temporary_files_reallen
-SAMTLS=samtools
-BWA=bwa
+SDIR="$0"
+if [ -L $SDIR ] ; then
+    SDIR=$(readlink $SDIR)
+fi
+SCRIPTPATH=$(cd $(dirname $SDIR); pwd)
+
+if [ -z $ARG2 ] ; then
+    CONFIGFILE="$SCRIPTPATH/reallen.config"
+else
+    CONFIGFILE=$ARG2
+fi
+source $CONFIGFILE
 
 if [ ! -e $TMPDIR ]
 then
@@ -57,15 +64,15 @@ then
     PROCOPT="-t ${ARG4}"
 fi
 
-if [ $ARG2 ]
+if [ $ARG3 ]
 then
-    SVOPT="-l $ARG2"
+    SVOPT="-l $ARG3"
 else
     SVOPT="-l 40"
 fi
 
 # Run ReALLEN & BWA
-$FASTFILT -u -p -b 8 -s 8 ${rt}.bam --softclip $TMPDIR/${rt}.sc.fq -o $TMPDIR/${rt}.um.sam --fixed $TMPDIR/${rt}.um.fq -f 45 -l 100 -k
+$BAMFILTER -u -p -b 8 -s 8 ${rt}.bam --softclip $TMPDIR/${rt}.sc.fq -o $TMPDIR/${rt}.um.sam --fixed $TMPDIR/${rt}.um.fq -f 45 -l 100 -k
 echo
 echo "performing BWA for ${rt}.sc.fq"
 $BWA mem ${PROCOPT} -O3 -E1 -T20 -a $BWAHG19 $TMPDIR/${rt}.sc.fq > $TMPDIR/${rt}.sc_re.sam
