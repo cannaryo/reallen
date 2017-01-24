@@ -52,6 +52,15 @@ else
 fi
 source $CONFIGFILE
 
+BAMFILTER=`which bamfilter`
+if [ ! -x "$BAMFILTER" ]
+then
+    echo "bamfilter is not found!"
+    echo "%% bamfilter is required for reallen-fast.sh."
+    echo "%% See README for detailed information."
+    exit
+fi
+
 if [ ! -e $TMPDIR ]
 then
     mkdir $TMPDIR

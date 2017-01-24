@@ -14,21 +14,23 @@ echo "Install Directory is ${CDIR}"
 
 echo
 echo "Searching for BWA:"
-if [ -x $(which bwa) ]
+if [ -x "$(which bwa)" ]
 then
     echo "OK"
 else
     echo "BWA is not found!"
-    echo "Please confirm the path to BWA in reallen.config" 
+    echo "Please confirm the path to BWA in reallen.config"
+    echo
 fi
 echo
 echo "Searching for Samtools:"
-if [ -x $(which samtools) ]
+if [ -x "$(which samtools)" ]
 then
     echo "OK"
 else
     echo "Samtools is not found!"
-    echo "Please confirm the path to Samtools in reallen.config" 
+    echo "Please confirm the path to Samtools in reallen.config"
+    echo
 fi
 
 REMOTEURL="mars.kmc.gr.jp/~kanno/download/reallen"

@@ -19,7 +19,7 @@ rnd = Random.new
 out_file="tmp.sam"
 
 opt = OptionParser.new(banner)
-opt.on("-p rate","Sampling Rate (default: 0.5") { |v| sample_rate = v.to_f }
+opt.on("-p rate","Sampling Rate (default: 0.5)") { |v| sample_rate = v.to_f }
 opt.on("-o file","output file (default: tmp.sam)") {|v| out_file=v}
 
 opt.parse!(ARGV)
