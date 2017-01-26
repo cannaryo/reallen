@@ -12,11 +12,13 @@ Requirements
 Before running ReALLEN, please confirm that the following packages are properly installed on your system.
 
 1. Ruby 2.2.3 or lator.  
-https://github.com/ruby/ruby.git  
+https://github.com/ruby/ruby/  
 See offcial site for information.  
 https://www.ruby-lang.org/  
 
-Example for the installation of ruby-2.2.5 :
+To check the version, type 'ruby -v'.
+
+Example of the installation of ruby-2.2.5 :
 
     wget https://cache.ruby-lang.org/pub/ruby/2.2/ruby-2.2.5.tar.bz2
     tar xvf ruby-2.2.5.tar.bz2
@@ -26,24 +28,25 @@ Example for the installation of ruby-2.2.5 :
     make install
 
 2. BWA software package.  
-https://github.com/lh3/bwa.git
+https://github.com/lh3/bwa/
 
 3. SAMtools library to process SAM/BAM files.  
-https://github.com/samtools/samtools.git
+https://github.com/samtools/samtools/  
+https://github.com/samtools/htslib/
 
-I reccomend you to use git for installing ReALLEN and the depending packages.
+I reccomend you to use *git* for installing ReALLEN and the depending packages.
 
 ============
 Installation
 ============
 
     git clone https://github.com/cannaryo/reallen.git
-    cd reallen-master
+    cd reallen
     ./setup.sh
 
-You need network connection to download the reference and annotations during the instalation.
+*setup.sh* starts downloading required files (references and annotations) from a remote host. You need network connection to finish the installation.
 
-I recommend you to make symbolic link of *reallen-start.sh* and *annotate-sv.sh* into a location with a PATH (for example, /usr/local/bin)
+I recommend you to make symbolic links of *reallen-start.sh* and *annotate-sv.sh* into a location with a PATH (for example, /usr/local/bin/)
 
 ========
 Test run
@@ -56,8 +59,8 @@ Try following commands to check the instlation.
     ../annotate-sv.sh sample.bp
 
 If ReALLEN properly worked, *sample.bp* and *sample.csv* were created.  
-*sample.bp* is row output which includes the postions of breakpoints.  
-*sample.csv* is annotated table.
+*sample.bp* is row output which includes the postions of the breakpoints.  
+*sample.csv* is an annotated table.
 
 ==============================
 Run ReALLEN with default value
@@ -65,8 +68,8 @@ Run ReALLEN with default value
 
     reallen-start.sh <your-bam-file-name.bam>
 
-It is easy and well-oplitized run for human genome (hg19).
-To make table format file, use following command.
+It is an easy and well-oplitized run for human genome (hg19).
+To make a table format file, use following command.
 
     annotate-sv.sh <your-bam-file-name.bp>
 
@@ -78,7 +81,7 @@ Run ReALLEN step by step
 
 You are able to run ReALLEN step by step for custamized analysis.
 Each script file is located at *reallen/src/*  
-Each script '*.rb' is simply excutable when your system has Ruby interpreter.
+Each script '~.rb' is directly excutable if your system has Ruby interpreter.
 See *run-step-by-step.txt* to learn how to apply each script on your data.
 
 If you want to use another resources (for example, reference of another species), you have to make them by yourselves. 
@@ -92,7 +95,7 @@ We are now developping faster version of ReALLEN.
 One of the scripts, *bamfilter*, is currently avairable.
 
 See,  
-https://github.com/cannaryo/bamfilter.git
+https://github.com/cannaryo/bamfilter/
 
 You can use *reallen-fast.sh* instead of *reallen-start.sh* after you install bamfilter into your system.
 

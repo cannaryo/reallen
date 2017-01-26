@@ -7,31 +7,31 @@
 # Use -h option to see help document of each script.
 
 
-# Before running workflow, convert BAM file to SAM file if needed.
+# Before running workflow, convert BAM files to SAM files if needed.
 # ('data.bam' is a name of input file in this tutorial).
 
 samtools view -h data.bam > data.sam
 
 # First of the workflow, filter input read data.
-# filtRead.rb works only with SAM format file.
+# filtRead.rb works only with SAM format files.
 # Specify threshold values of the alignment with '-i'/'-d'/'-s' options.
 
 filtRead.rb -i 5 -d 5 -s 8 -u data.sam -o data.filt.sam
 
-# run soft-clip split to make FASTQ file.
+# run soft-clip split to make a FASTQ file.
 # Remaining reads are saved when '-e' option is specified.
 
 splitSoftClip.rb data.filt.sam -e data.um.sam -o data.sc.fq
 
 # Realign the reads by BWA-mem.
-# Note that you must use '-a' option to check second alignment.
-# See BWA document if you want to make BWT references.
+# Note that you must use '-a' option to keep second alignments.
+# See BWA documents if you want to make BWT references.
 
 bwa mem reference/bwa-hg19 -a data.sc.fq > data.sc_re.sam
 
-# Filter non-specific alignment.
-# The minimum distance between first aignment and second alignment
-#  is specified with '-s' option.
+# Filter non-specific alignments.
+# The minimum distance between the first aignment and the second 
+#  alignment is specified with '-s' option.
 
 filtNonSpecific.rb -s 10 -f 0.7 data.sc_re.sam -o data.sc_ns.sam
 
@@ -41,7 +41,7 @@ filtNonSpecific.rb -s 10 -f 0.7 data.sc_re.sam -o data.sc_ns.sam
 
 pairTest.rb -r -l 20 data.sc_ns.sam -o data.sc_map.sam
 
-# Then, run fixed-length split and repeat the process.
+# Then, run fixed-length split.
 # The cutting size is specified with '-s' option.
 
 splitRead.rb -l 100 -s 45 data.um.sam -o data.um.fq
@@ -50,18 +50,18 @@ splitRead.rb -l 100 -s 45 data.um.sam -o data.um.fq
 
 bwa mem -a reference/bwa-hg19 data.um.fq > data.um_re.sam
 
-# Filter non-specific alignment.
+# Filter non-specific alignments.
 
 filtNonSpecific.rb -s 15 -f 0.6 data.um_re.sam -o data.um_ns.sam
 
 # Check the original distances of read pairs and use the values for 
-#  pairing test in the case of fixed-length split.
+#  the pairing test in case of fixed-length split.
 
 extractLength.rb data.um.sam -o data.um.len
 pairTest.rb -r -l 20 -f data.um.lenm.len data.um_ns.sam -o data.um_map.sam
 
 # Perform discontinuos dynamic programming (or split mapping)
-#  to compute exact location of the breakpoint.
+#  to compute exact locations of the breakpoints.
 
 prepDDP.rb data.um_map.sam -o data.um_ddp.pos
 DDP.rb -f 0.7 reference/hg19.fa data.um.sam data.um_ddp.pos -o data.um_ddp.sam
@@ -74,7 +74,7 @@ mergeSAM.rb data.sc_map.sam data.um_ddp.sam -o data.merge.sam
 
 filtBP.rb -r 30 data.merge.sam -o data.bp.sam -p data.bp
 
-# 'data.bp' is the file that includes raw positions of the breakpoints.
+# 'data.bp' is a file that includes raw positions of the breakpoints.
 # If you want to see in table format, use bp2table.rb for converting.
 # Although this script has many options, I just show simple usage.
  
@@ -83,9 +83,8 @@ bp2table.rb -o data.csv ${rt}.bp
 
 # Other usuful scripts are as follows:
 #
-# cutFa.rb : make an artifitial rearranged sequence from fasta file.
+# cutFa.rb : make an artifitial rearranged sequence from a FASTA file.
 #
-# filtFlag.rb : filter sam file by flag data.
+# filtFlag.rb : filter a SAM-format file by flag data.
 #
-# gene2bed.rb : make region bedfile from gene names (for local detection).
-
+# gene2bed.rb : make a region bedfile from gene names (for local detection).
