@@ -47,7 +47,7 @@ while true
   break if(sam.size==0)
   
   for d in sam.data
-    k,tag=d.qname.scan(/^([^:]+(?::[^:]+){1,9})[:\/]([^:]*)$/).first
+    k,tag=d.qname.scan(/^([^:]+(?::[^:]+){0,9})[:\/]([^:]*)$/).first
     next if( k==nil || (d.flag & 256 == 256))
     if(ids.key?(k))
       if(d.rname != "*" && ids[k].rname != "*")

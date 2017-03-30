@@ -49,7 +49,7 @@ while true
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   for d in sam.data
-    k=d.qname.scan(/([^:]+(?::[^:]+){1,9})$/).first.first
+    k=d.qname.scan(/([^:]+(?::[^:]+){0,9})$/).first.first
     next if k==nil
     if(id_tmp[0] == k)
       id_tmp[1] = nil if(id_tmp[1] != nil && (SAMDecoder.get_option(id_tmp[1],"AS") - SAMDecoder.get_option(d,"AS")).abs < min_score)

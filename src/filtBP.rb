@@ -16,7 +16,7 @@ BPField = Struct.new("BPField", :id, :chr, :pos, :dir, :len, :side, :ter)
 # Chrom_order = ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22","chrX","chrY","chrM"]
 
 def calc_bp_field(dat)
-  k,tag=dat.qname.scan(/^([^:]+(?::[^:]+){1,9})[:\/]([^:]*)$/).first
+  k,tag=dat.qname.scan(/^([^:]+(?::[^:]+){0,9})[:\/]([^:]*)$/).first
   rec=BPField.new(k, dat.rname, dat.pos, "*", 0, "*", "*")
   if(tag =~ /L[MSF]$/)
     if(dat.flag & 16 == 16)
@@ -168,14 +168,14 @@ class BPNode
   end
 
   def show_by_pos(out)
-    k,tag=@data_arr.first.qname.scan(/^([^:]+(?::[^:]+){1,9})[:\/]([^:]*)$/).first
+    k,tag=@data_arr.first.qname.scan(/^([^:]+(?::[^:]+){0,9})[:\/]([^:]*)$/).first
     out.printf("%s, %s, %s, %d, %s, %s, %d, %d, %s, %s, %d, %s, %s, %d, %d\n", 
                k, @bp1.side, @bp1.chr, @bp1.pos, @bp1.dir, @bp1.ter, @cov, max_len(@bp_arr1), 
                @bp2.side, @bp2.chr, @bp2.pos, @bp2.dir, @bp2.ter, @cov, max_len(@bp_arr2))
   end
 
   def show_by_bed(out, len=1)
-    k,tag=@data_arr.first.qname.scan(/^([^:]+(?::[^:]+){1,9})[:\/]([^:]*)$/).first
+    k,tag=@data_arr.first.qname.scan(/^([^:]+(?::[^:]+){0,9})[:\/]([^:]*)$/).first
     for dd in [@bp1, @bp2]
       if(dd.ter=="p")
         p1 = dd.pos - len
@@ -226,7 +226,7 @@ while true
   MaxLine.times { sam.read_record }
   break if(sam.size==0)
   for d in sam.data
-    k,tag=d.qname.scan(/^([^:]+(?::[^:]+){1,9})[:\/]([^:]*)$/).first
+    k,tag=d.qname.scan(/^([^:]+(?::[^:]+){0,9})[:\/]([^:]*)$/).first
     next if( k==nil || (d.flag & 256 == 256))
     if(ids.key?(k))
       if(d.rname != "*" && ids[k].rname != "*")

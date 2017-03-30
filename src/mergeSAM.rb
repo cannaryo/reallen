@@ -49,7 +49,7 @@ while true
   
   break if(sam_1.size==0)  
   for d in sam_1.data
-    k,tag=d.qname.scan(/^([^:]+(?::[^:]+){1,9})[:\/]([^:]*)$/).first
+    k,tag=d.qname.scan(/^([^:]+(?::[^:]+){0,9})[:\/]([^:]*)$/).first
     rec.push(d)
     ids[k]=true
   end
@@ -68,7 +68,7 @@ while true
   
   break if(sam_2.size==0)  
   for d in sam_2.data
-    k,tag=d.qname.scan(/^([^:]+(?::[^:]+){1,9})[:\/]([^:]*)$/).first
+    k,tag=d.qname.scan(/^([^:]+(?::[^:]+){0,9})[:\/]([^:]*)$/).first
     rec.push(d) unless(ids.key?(k) || keep_id)
   end
   c2_d += sam_2.size
