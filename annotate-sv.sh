@@ -2,7 +2,7 @@
 
 function usage()
 {
-    echo "usage: annotate-sv.sh [-b <in.bed>] [-d <in.bam>] <in.bp>"
+    echo "usage: annotate-sv.sh [options] <in.bp>"
     echo "  -B          output by BLAST-like format"
     echo "  -d FILE     specify original BAM file (default: <root>.bam)"
     echo "  -c FILE     specify config file [reallen.config]"
